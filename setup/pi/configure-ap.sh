@@ -119,6 +119,14 @@ then
   IP=${AP_IP:-"192.168.66.1"}
   NET=$(echo -n "$IP" | sed -e 's/\.[0-9]\{1,3\}$//')
 
+  # Convert AP_HIDDEN from true/false to 1/0
+  if [ "${AP_HIDDEN:-false}" = "true" ]
+  then
+    AP_HIDDEN_VALUE=1
+  else
+    AP_HIDDEN_VALUE=0
+  fi
+
   # install required packages
   log_progress "installing dnsmasq and hostapd"
   apt-get -y --force-yes install dnsmasq hostapd
@@ -160,6 +168,7 @@ then
 	wpa_key_mgmt=WPA-PSK
 	wpa_pairwise=TKIP CCMP
 	rsn_pairwise=CCMP
+  ignore_broadcast_ssid=${AP_HIDDEN_VALUE}
 	EOF
   cat <<- EOF > /etc/default/hostapd
 	DAEMON_CONF="/etc/hostapd/hostapd.conf"
